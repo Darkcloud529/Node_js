@@ -1,0 +1,9 @@
+#for mac
+*/.DS_Store
+.DS_Store
+
+#all ingnore
+client/*.gitignore
+server/*.gitignore
+
+
