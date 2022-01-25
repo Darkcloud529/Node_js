@@ -2,6 +2,7 @@ import React from "react";
 import UploadForm from "./components/UploadForm";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ImageList from "./components/ImageList";
 
 const App = () => {
   // return 할 때 제일 최상 태그는 하나만 가능
@@ -10,6 +11,7 @@ const App = () => {
       <ToastContainer /> 
       <h2>사진첩</h2>
       <UploadForm />
+      <ImageList />
   </div>
   );
 };
