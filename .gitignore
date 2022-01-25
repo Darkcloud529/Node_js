@@ -5,5 +5,5 @@
 #all ingnore
 client/*.gitignore
 server/*.gitignore
-
+server/uploads/*
 
