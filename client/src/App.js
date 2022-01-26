@@ -7,7 +7,7 @@ import ImageList from "./components/ImageList";
 const App = () => {
   // return 할 때 제일 최상 태그는 하나만 가능
   return (
-  <div>
+  <div style={{maxWidth: 600, margin: "auto"}}>
       <ToastContainer /> 
       <h2>사진첩</h2>
       <UploadForm />

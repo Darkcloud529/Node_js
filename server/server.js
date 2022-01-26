@@ -10,7 +10,7 @@ const Image = require("./models/Image");
 const storage = multer.diskStorage({
     //destination : 저장할 위치
     destination: (req, file, cb) => cb(null, "./uploads"),
-    // filename : 어떤 이름으로 저장할지
+    //filename : 어떤 이름으로 저장할지
     filename: (req, file, cb) => 
     cb(null, `${uuid()}.${mime.extension(file.mimetype)}`),
 });
