@@ -2,6 +2,7 @@ const {Router} = require("express");
 const userRouter = Router();
 const User = require("../models/User");
 const {hash, compare} = require("bcryptjs");
+const Image = require("../models/image");
 const mongoose = require("mongoose");
 
 // 회원가입 처리
@@ -12,7 +13,7 @@ userRouter.post("/register", async(req, res) => {
         if(req.body.username.length<3)
             throw new Error("유저명은 3자 이상 입력해주세요.");    
         const hashedPassword = await hash(req.body.password, 10); // 비밀번호 암호화
-        await new User({
+        const user = await new User({
             name: req.body.name,
             username: req.body.username,
             hashedPassword,
@@ -23,6 +24,7 @@ userRouter.post("/register", async(req, res) => {
             message:"user registered", 
             sessionId:session._id, 
             name:user.name,
+            userId: user._id,
         });
     } catch(err) {
         res.status(400).json({message: err.message});
