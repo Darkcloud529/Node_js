@@ -40,7 +40,7 @@ userRouter.patch("/login", async(req,res)=>{
         user.sessions.push({createdAt: new Date()});
         const session = user.sessions[user.sessions.length-1];
         await user.save();
-        res.json({message:"user validated", sessionId:session._id, name: user.name});
+        res.json({message:"user validated", sessionId:session._id, name: user.name, userId: user._id,});
     } catch(err) {
         res.status(400).json({message:err.message});
     }
@@ -59,6 +59,21 @@ userRouter.patch("/logout", async(req,res) => {
     } catch(err) {
         console.log(err);
         res.status(400).json({message:err.message});
+    }
+});
+
+userRouter.get("/me", (req, res) => {
+    try {
+        if(!req.user) throw new Error("권한이 없습니다!");
+        res.json({
+            message:"success", 
+            sessionId:req.headers.sessionid, 
+            name: req.user.name,
+            userId: req.user._id,
+        });
+    } catch(err) {
+        console.log(err)
+        res.status(400).json({message: err.message})
     }
 });
 
