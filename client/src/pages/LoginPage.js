@@ -19,8 +19,8 @@ const LoginPage = () => {
             navigate("/");
             toast.success("로그인 성공!");
         } catch(err) {
-            console.error(err);
-            toast.error(err.message)
+            console.error(err.response);
+            toast.error(err.response.data.message);
         }
         
     };

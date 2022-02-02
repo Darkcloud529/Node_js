@@ -35,6 +35,7 @@ userRouter.post("/register", async(req, res) => {
 userRouter.patch("/login", async(req,res)=>{
     try {
         const user = await User.findOne({username: req.body.username});
+        if(!user) throw new Error("가입되지 않은 이메일 입니다.");
         const isValid = await compare(req.body.password, user.hashedPassword); // 비밀번호 비교 
         if(!isValid) throw new Error("입력하신 정보가 올바르지 않습니다.");
         user.sessions.push({createdAt: new Date()});
