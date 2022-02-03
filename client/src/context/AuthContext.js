@@ -8,11 +8,14 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         const sessionId = localStorage.getItem("sessionId");
-        console.log(sessionId);
+        //console.log(sessionId);
+        // 로그인 하면
         if(me) {
             axios.defaults.headers.common.sessionid = me.sessionId;
             localStorage.setItem("sessionId", me.sessionId);
-        } else if(sessionId) {
+        } 
+         // session Id가 존재하면(=로그인 상태)
+         else if(sessionId) {
             axios.get("/users/me", {headers:{sessionid: sessionId}})
             .then(result => 
                 setMe({
