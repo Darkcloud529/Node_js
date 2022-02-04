@@ -15,7 +15,7 @@ imageRouter.post("/", upload.single("image"), async (req, res) => {
                 name: req.user.name,
                 username: req.user.username,
             },
-            public: req.body.public,
+            public: req.body.public, // string 타입!
             key: req.file.filename, 
             originalFileName: req.file.originalname, 
         }).save();
@@ -27,7 +27,7 @@ imageRouter.post("/", upload.single("image"), async (req, res) => {
 });      //이미지 업로드
 imageRouter.get("/", async(req,res) => {
     // public한 이미지들만 제공
-    const images = await Image.find(); // 배열로 이미지 불러오기 
+    const images = await Image.find({public:true}); // 배열로 이미지 불러오기 
     res.json(images);
 });
 
