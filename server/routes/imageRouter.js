@@ -4,6 +4,8 @@ const Image = require("../models/image");
 const {upload} = require("../middleware/imageUpload");
 const fs = require("fs"); 
 const {promisify} = require("util");
+const mongoose = require("mongoose");
+const { runInNewContext } = require("vm");
 
 const fileUnlink = promisify(fs.unlink);
 
@@ -41,9 +43,15 @@ imageRouter.delete("/:imageId", async(req,res) => {
     // 1. uploads 폴더에 있는 사진 데이터를 삭제
     // 2. 데이터베이스에 있는 image 문서를 삭제
     try {
+        console.log(req.params);
         if(!req.user) throw new Error("권한이 없습니다.");
-        await fileUnlink("./uploads/test.jpeg");
-        res.json({message: "요청하신 이미지가 삭제되었습니다."});
+        if(!mongoose.isValidObjectId(req.params.imageId)) throw new Error ("올바른 않은 이미지 id입니다.");
+        
+        const image = await Image.findOneAndDelete({_id:req.params.imageId});
+        if(!image) 
+            return res.json({message: "요청하신 사진은 이미 삭제되었습니다."});
+        await fileUnlink(`./uploads/${image.key}`);
+        res.json({message: "요청하신 이미지가 삭제되었습니다.", image});
     } catch(err) {
         console.log(err);
         res.status(400).json({message:err.message});
