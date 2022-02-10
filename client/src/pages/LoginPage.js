@@ -15,6 +15,7 @@ const LoginPage = () => {
             e.preventDefault();
             if(username.length<3 || password.length <6) throw new Error("입력하신 정보가 올바르지 않습니다.");
             const result = await axios.patch("/users/login", {username, password});
+            axios.defaults.headers.common.sessionid = result.data.sessionid;
             setMe({userId: result.data.userId, sessionId: result.data.sessionId, name: result.data.name,})
             navigate("/");
             toast.success("로그인 성공!");
