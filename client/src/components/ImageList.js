@@ -1,6 +1,7 @@
 import React, {useContext} from "react";     //useEffect 사이드 이팩트가 발생할 때 사용
 import { AuthContext } from "../context/AuthContext";
 import {ImageContext} from "../context/ImageContext";
+import "./ImageList.css";
 
 const ImageList = () => {
     const {images, myImages, isPublic, setIsPublic } = useContext(ImageContext);
@@ -10,7 +11,7 @@ const ImageList = () => {
         <img 
         alt=""
         key={image.key}
-        style={{width:"100%"}} 
+        
         src={`http://localhost:5000/uploads/${image.key}`}/>
     ));
     return (
@@ -19,7 +20,8 @@ const ImageList = () => {
             {me && <button onClick={() => setIsPublic(!isPublic)}>
                 {(isPublic ? "개인" : "공개") + "사진 보기"}
                 </button>}
-            {imgList}
+                <div className="image-list-container">{imgList}</div>
+            
         </div>
     )};
 
