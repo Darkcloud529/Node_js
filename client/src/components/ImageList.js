@@ -1,4 +1,5 @@
-import React, {useContext} from "react";     //useEffect 사이드 이팩트가 발생할 때 사용
+import React, {useContext} from "react";  
+import {Link} from "react-router-dom";   //useEffect 사이드 이팩트가 발생할 때 사용
 import { AuthContext } from "../context/AuthContext";
 import {ImageContext} from "../context/ImageContext";
 import "./ImageList.css";
@@ -8,11 +9,11 @@ const ImageList = () => {
     const [me] = useContext(AuthContext);
     //console.log({images});
     const imgList = (isPublic ? images : myImages).map((image) => (
+        <Link key={image.key} to={`/images/${image._id}`}>
         <img 
         alt=""
-        key={image.key}
-        
         src={`http://localhost:5000/uploads/${image.key}`}/>
+        </Link>
     ));
     return (
         <div>
