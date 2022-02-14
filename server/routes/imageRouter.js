@@ -10,22 +10,28 @@ const { runInNewContext } = require("vm");
 const fileUnlink = promisify(fs.unlink);
 
 // image 경로로 post 호출이 왔을 때 
-imageRouter.post("/", upload.single("image"), async (req, res) => {
+// 최대 5장의 이미지까지만 업로드
+imageRouter.post("/", upload.array("image", 5), async (req, res) => {
     //console.log(req.file);
     // 유저 정보 , public 유무 확인
     try {
         if(!req.user) throw new Error("권한이 없습니다.");
-        const image = await new Image({ 
-            user: {
-                _id: req.user.id,
-                name: req.user.name,
-                username: req.user.username,
-            },
-            public: req.body.public, // string 타입!
-            key: req.file.filename, 
-            originalFileName: req.file.originalname, 
-        }).save();
-        res.json(image); // return 값
+        const images = await Promise.all(
+            req.files.map(async (file) => {
+            const image = await new Image({ 
+                user: {
+                    _id: req.user.id,
+                    name: req.user.name,
+                    username: req.user.username,
+                },
+                public: req.body.public, // string 타입!
+                key: file.filename, 
+                originalFileName: file.originalname, 
+            }).save();
+            return image;
+            })
+        );
+        res.json(images); // return 값
     } catch(err) {
         console.log(err);
         res.status(400).json({message:err.message});

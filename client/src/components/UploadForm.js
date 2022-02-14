@@ -8,16 +8,17 @@ import {ImageContext} from "../context/ImageContext";
 const UploadForm = () => {
     const {images, setImages, myImages, setMyImages} = useContext(ImageContext);
     const defaultFileName = "이미지 파일을 업로드 해주세요.";
-    const [file, setFile] = useState(null);
+    const [files, setFiles] = useState(null);
     const [imgSrc, setImgSrc] = useState(null);
     const [fileName, setFileName] = useState(defaultFileName);
     const [percent, setPercent] = useState(0);
     const [isPublic, setIsPublic] = useState(true);
 
     const imageSelectHandler = (event) => {
-        const imageFile = event.target.files[0];
+        const imageFiles = event.target.files;
         //console.log({imageFile});
-        setFile(imageFile);
+        setFiles(imageFiles);
+        const imageFile = imageFiles[0];
         setFileName(imageFile.name);
         const fileReader = new FileReader();
         fileReader.readAsDataURL(imageFile);
@@ -27,7 +28,9 @@ const UploadForm = () => {
     const onSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append("image", file);
+        for(let file of files) {
+            formData.append("image", file);
+        }
         formData.append("public", isPublic);
         try {
             const res = await axios.post("/images", formData, {
@@ -38,8 +41,8 @@ const UploadForm = () => {
                     setPercent(Math.round((100*e.loaded) / e.total));
                 },
             });
-            if(isPublic) setImages([...images, res.data]);
-            else setMyImages([...myImages, res.data]);
+            if(isPublic) setImages([...images, ...res.data]);
+            else setMyImages([...myImages, ...res.data]);
             //console.log({res});
             toast.success("이미지 업로드 성공!");
             // 이미지 업로드 성공 후 초기화
@@ -67,6 +70,7 @@ const UploadForm = () => {
                 <input 
                 id="image" 
                 type="file" 
+                multiple //여러 파일 업로드
                 accept="image/*" //이미지 파일만 업로드 설정
                 onChange={imageSelectHandler} 
                 />
