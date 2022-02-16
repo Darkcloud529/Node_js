@@ -82,7 +82,7 @@ const UploadForm = () => {
     />
     ));
 
-    const fileName = previews.length === 0 ? "이미지 파일을 업로드 해주세요." : previews.reduce((previous, current)=>previous+`${current.fileName},`,"")
+    const fileName = previews.length === 0 ? "이미지 파일을 업로드 해주세요." : previews.reduce((previous, current)=>previous+`${current.fileName},`,"");
 
     return (
         <form onSubmit={onSubmit}>

@@ -8,13 +8,14 @@ export const ImageProvider = (prop) => {
     const [images, setImages] = useState([]);
     const [myImages, setMyImages] = useState([]);
     const [ isPublic, setIsPublic ]= useState(false);
+    const [imageUrl, setImageUrl] = useState("/images");
     const [me] = useContext(AuthContext);
     useEffect(() => {
         axios
-        .get("/images")
-        .then((result) => setImages(result.data))
+        .get(imageUrl)
+        .then((result) => setImages(prevData => [...prevData, ...result.data]))
         .catch((err) => console.error(err));
-    },[]);
+    },[imageUrl]);
     useEffect(() => {
         if (me) {
             setTimeout(() => {
@@ -29,8 +30,14 @@ export const ImageProvider = (prop) => {
         }
     },[me]);
 
+    const loaderMoreImages = () => {
+        if(images.length === 0) return;
+        const lastImageId = images[images.length - 1]._id;
+        setImageUrl(`/images?lastid=${lastImageId}`);
+    };
+
    return( 
-        <ImageContext.Provider value={{images, setImages, myImages, setMyImages, isPublic, setIsPublic }}>
+        <ImageContext.Provider value={{images, setImages, myImages, setMyImages, isPublic, setIsPublic, loaderMoreImages }}>
             {prop.children}
         </ImageContext.Provider>
     );

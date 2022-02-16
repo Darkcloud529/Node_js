@@ -39,8 +39,23 @@ imageRouter.post("/", upload.array("image", 5), async (req, res) => {
 });      //이미지 업로드
 imageRouter.get("/", async(req,res) => {
     // public한 이미지들만 제공
-    const images = await Image.find({public:true}); // 배열로 이미지 불러오기 
-    res.json(images);
+    try {
+        const {lastid} = req.query;
+        if(lastid && !mongoose.isValidObjectId(lastid)) 
+            throw new Error("invalid lastid");
+        const images = await Image.find(
+            lastid ? {
+                public:true,
+                _id: {$lt: lastid}
+            } : {public:true}
+        )
+        .sort({_id:-1}) // 최신사진이 제일 먼저 나오기
+        .limit(20); // 20개씩 묶어서 화면 출력
+        res.json(images);
+    } catch(err) {
+        console.log(err);
+        res.status(400).json({message: message.err})
+    }  
 });
 
 imageRouter.delete("/:imageId", async(req,res) => {
