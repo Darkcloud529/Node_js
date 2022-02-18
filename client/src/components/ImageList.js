@@ -1,4 +1,4 @@
-import React, {useContext} from "react";  
+import React, {useContext, useEffect, useRef} from "react";  
 import {Link} from "react-router-dom";   //useEffect 사이드 이팩트가 발생할 때 사용
 import { AuthContext } from "../context/AuthContext";
 import {ImageContext} from "../context/ImageContext";
@@ -7,9 +7,23 @@ import "./ImageList.css";
 const ImageList = () => {
     const {images, myImages, isPublic, setIsPublic, loaderMoreImages, imageLoading, imageError } = useContext(ImageContext);
     const [me] = useContext(AuthContext);
+    const elementRef = useRef(null);
+
+    useEffect(()=> {
+        console.log(elementRef.current);
+    },[]);
+
     //console.log({images});
-    const imgList = (isPublic ? images : myImages).map((image) => (
-        <Link key={image.key} to={`/images/${image._id}`}>
+    const imgList = isPublic 
+    ? images.map((image, index) => (
+        <Link key={image.key} to={`/images/${image._id}`} ref={index+1 === images.length ? elementRef : undefined}>
+        <img 
+        alt=""
+        src={`http://localhost:5000/uploads/${image.key}`}/>
+        </Link>
+    )) 
+    : myImages.map((image, index) => (
+        <Link key={image.key} to={`/images/${image._id}`} ref={index+1 === myImages.length ? elementRef : undefined}>
         <img 
         alt=""
         src={`http://localhost:5000/uploads/${image.key}`}/>
