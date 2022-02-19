@@ -10,13 +10,19 @@ const ImageList = () => {
     const elementRef = useRef(null);
 
     useEffect(()=> {
-        console.log(elementRef.current);
-    },[]);
+        if(!elementRef.current) return;
+        const observer = new IntersectionObserver(([entry])=>{
+            console.log('intersection', entry.isIntersecting);
+            if(entry.isIntersecting) loaderMoreImages();
+        });
+        observer.observe(elementRef.current);
+        return () => observer.disconnect();
+    },[loaderMoreImages]);
 
     //console.log({images});
     const imgList = isPublic 
     ? images.map((image, index) => (
-        <Link key={image.key} to={`/images/${image._id}`} ref={index+1 === images.length ? elementRef : undefined}>
+        <Link key={image.key} to={`/images/${image._id}`} ref={index+5 === images.length ? elementRef : undefined}>
         <img 
         alt=""
         src={`http://localhost:5000/uploads/${image.key}`}/>
