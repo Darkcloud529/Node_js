@@ -5,7 +5,7 @@ import {ImageContext} from "../context/ImageContext";
 import "./ImageList.css";
 
 const ImageList = () => {
-    const {images, myImages, isPublic, setIsPublic, loaderMoreImages, imageLoading, imageError } = useContext(ImageContext);
+    const {images,  isPublic, setIsPublic, loaderMoreImages, imageLoading, imageError } = useContext(ImageContext);
     const [me] = useContext(AuthContext);
     const elementRef = useRef(null);
 
@@ -20,21 +20,14 @@ const ImageList = () => {
     },[loaderMoreImages]);
 
     //console.log({images});
-    const imgList = isPublic 
-    ? images.map((image, index) => (
+    const imgList = images.map((image, index) => (
         <Link key={image.key} to={`/images/${image._id}`} ref={index+5 === images.length ? elementRef : undefined}>
         <img 
         alt=""
         src={`http://localhost:5000/uploads/${image.key}`}/>
         </Link>
-    )) 
-    : myImages.map((image, index) => (
-        <Link key={image.key} to={`/images/${image._id}`} ref={index+1 === myImages.length ? elementRef : undefined}>
-        <img 
-        alt=""
-        src={`http://localhost:5000/uploads/${image.key}`}/>
-        </Link>
     ));
+  
     return (
         <div>
             <h3 style={{display: "inline-block", marginRight: 10}}>Image List({(isPublic ? "공개" : "개인")} 사진)</h3>

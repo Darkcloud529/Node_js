@@ -16,7 +16,11 @@ export const ImageProvider = (prop) => {
         setImageLoading(true)
         axios
         .get(imageUrl)
-        .then((result) => setImages(prevData => [...prevData, ...result.data]))
+        .then((result) => 
+            isPublic 
+            ? setImages((prevData) => [...prevData, ...result.data]) 
+            : setMyImages((prevData) => [...prevData, ...result.data])
+        )
         .catch((err) => {
             console.error(err);
             setImageError(err);
@@ -42,10 +46,18 @@ export const ImageProvider = (prop) => {
     const loaderMoreImages = useCallback(() => {
         if(imageLoading || !lastImageId) return;
         setImageUrl(`/images?lastid=${lastImageId}`);
-    },[lastImageId, imageLoading]);
+    },[lastImageId, imageLoading, isPublic]);
 
    return( 
-        <ImageContext.Provider value={{images, setImages, myImages, setMyImages, isPublic, setIsPublic, loaderMoreImages, imageLoading, imageError }}>
+        <ImageContext.Provider value={{
+            images: isPublic ? images:myImages, 
+            setImages : isPublic ? setImages : setMyImages, 
+            isPublic, 
+            setIsPublic, 
+            loaderMoreImages, 
+            imageLoading, 
+            imageError 
+            }}>
             {prop.children}
         </ImageContext.Provider>
     );
