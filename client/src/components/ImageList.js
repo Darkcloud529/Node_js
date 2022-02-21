@@ -1,13 +1,19 @@
-import React, {useContext, useEffect, useRef} from "react";  
+import React, {useContext, useEffect, useRef, useCallback} from "react";  
 import {Link} from "react-router-dom";   //useEffect 사이드 이팩트가 발생할 때 사용
 import { AuthContext } from "../context/AuthContext";
 import {ImageContext} from "../context/ImageContext";
 import "./ImageList.css";
 
 const ImageList = () => {
-    const {images,  isPublic, setIsPublic, loaderMoreImages, imageLoading, imageError } = useContext(ImageContext);
+    const {images,  isPublic, setIsPublic, imageLoading, imageError, setImageUrl } = useContext(ImageContext);
     const [me] = useContext(AuthContext);
     const elementRef = useRef(null);
+
+    const loaderMoreImages = useCallback(() => {
+        if(images.length === 0 || !imageLoading) return;
+        const lastImageId = images[images.length - 1]._id;
+        setImageUrl(`${isPublic ? "" : "/users/me"}/images?lastid=${lastImageId}`);
+    },[images, imageLoading, isPublic, setImageUrl]);
 
     useEffect(()=> {
         if(!elementRef.current) return;
