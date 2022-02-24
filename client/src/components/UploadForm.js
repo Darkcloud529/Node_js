@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import axios from "axios";                  //
 import { toast } from "react-toastify";     //error massage 출력
 import "./UploadForm.css";
@@ -8,11 +8,11 @@ import {ImageContext} from "../context/ImageContext";
 const UploadForm = () => {
     const { setImages, setMyImages } = useContext(ImageContext);
     const [files, setFiles] = useState(null);
-    
     const [previews, setPreviews] = useState([]);
-
-    const [percent, setPercent] = useState(0);
+    const [percent, setPercent] = useState([]);
     const [isPublic, setIsPublic] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const inputRef = useRef();
 
     const imageSelectHandler = async (event) => {
         const imageFiles = event.target.files;
@@ -58,15 +58,18 @@ const UploadForm = () => {
             toast.success("이미지 업로드 성공!");
             // 이미지 업로드 성공 후 초기화
             setTimeout(() => {
-                setPercent(0);                  //퍼센트 초기화
-                setPreviews([]);                //이미지 초기화
+                setPercent([]);                  //퍼센트 초기화
+                setPreviews([]);     
+                setIsLoading(false);          //이미지 초기화
+                inputRef.current.value = null;
             }, 3000);
         } catch(err) {
             //alert("fail!!");
             toast.error(err.response.data.message);
-            setPercent(0);
-            
+            setPercent([]);
             setPreviews([]);
+            setIsLoading(false);
+            inputRef.current.value = null;
             console.error(err);
         }
     };
@@ -90,6 +93,7 @@ const UploadForm = () => {
             <div className="file-dropper">
                 {fileName}
                 <input 
+                ref={(ref)=>(inputRef.current = ref)}
                 id="image" 
                 type="file" 
                 multiple //여러 파일 업로드
