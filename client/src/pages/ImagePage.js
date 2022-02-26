@@ -42,12 +42,13 @@ const ImagePage = () => {
     if(error) return <h3>Error...</h3>
     else if(!image) return <h3>loading...</h3>;
     //이미지 표시 함수
-    const updateImage = (images, image) => [
-        ...images.filter((image) => image._id !== imageId), image,
-    ].sort(
-        (a,b) => 
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+    const updateImage = (images, image) => 
+    [...images.filter((image) => image._id !== imageId), image].sort(
+        (a,b) => {
+            if(a._id < b._id) return 1;
+            else return -1;
+        });
+        
     // 좋아요 함수
     const onSubmit = async () => {
         const result = await axios.patch(`/images/${imageId}/${hasLiked ? "unlike" : "like"}`);
