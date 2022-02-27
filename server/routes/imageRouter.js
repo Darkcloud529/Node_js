@@ -9,6 +9,29 @@ const { runInNewContext } = require("vm");
 
 const fileUnlink = promisify(fs.unlink);
 
+
+imageRouter.post("/presigned", async(req, res) => {
+    try {
+        if(!req.user) throw Error("권한이 없습니다.");
+        const {contentTypes} = req.body;
+        if(!Array.isArray(contentTypes)) throw new Error("invalid contentTypes");
+        const presignedData = await Promise.all(
+            contentTypes.map(async (contentTypes) => {
+                const imageKey = `${uuid()}.${mime.extension(contentTypes)}`;
+                const key = `raw/${imageKey}`;
+                const presigned = await getSignedUrl({key});
+                return {imageKey, presigned};
+            })
+        );
+
+        res.json(presignedData);
+    } catch(err) {
+        console.log(err);
+        res.status(400).json({message:err.message});
+    }
+});
+
+
 // image 경로로 post 호출이 왔을 때 
 // 최대 5장의 이미지까지만 업로드
 imageRouter.post("/", upload.array("image", 5), async (req, res) => {
