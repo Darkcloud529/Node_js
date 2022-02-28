@@ -33,8 +33,8 @@ imageRouter.post("/presigned", async(req, res) => {
 
 
 // image 경로로 post 호출이 왔을 때 
-// 최대 5장의 이미지까지만 업로드
-imageRouter.post("/", upload.array("image", 5), async (req, res) => {
+// 최대 30장의 이미지까지만 업로드
+imageRouter.post("/", upload.array("image", 30), async (req, res) => {
     //console.log(req.file);
     // 유저 정보 , public 유무 확인
     try {
@@ -48,7 +48,7 @@ imageRouter.post("/", upload.array("image", 5), async (req, res) => {
                     username: req.user.username,
                 },
                 public: req.body.public, // string 타입!
-                key: file.filename, 
+                key: file.key.replace("raw/",""), 
                 originalFileName: file.originalname, 
             }).save();
             return image;
