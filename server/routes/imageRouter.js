@@ -10,48 +10,73 @@ const { runInNewContext } = require("vm");
 const fileUnlink = promisify(fs.unlink);
 
 
-imageRouter.post("/presigned", async(req, res) => {
-    try {
-        if(!req.user) throw Error("권한이 없습니다.");
-        const {contentTypes} = req.body;
-        if(!Array.isArray(contentTypes)) throw new Error("invalid contentTypes");
-        const presignedData = await Promise.all(
-            contentTypes.map(async (contentTypes) => {
-                const imageKey = `${uuid()}.${mime.extension(contentTypes)}`;
-                const key = `raw/${imageKey}`;
-                const presigned = await getSignedUrl({key});
-                return {imageKey, presigned};
-            })
-        );
+// imageRouter.post("/presigned", async(req, res) => {
+//     try {
+//         if(!req.user) throw Error("권한이 없습니다.");
+//         const {contentTypes} = req.body;
+//         if(!Array.isArray(contentTypes)) throw new Error("invalid contentTypes");
+//         const presignedData = await Promise.all(
+//             contentTypes.map(async (contentTypes) => {
+//                 const imageKey = `${uuid()}.${mime.extension(contentTypes)}`;
+//                 const key = `raw/${imageKey}`;
+//                 const presigned = await getSignedUrl({key});
+//                 return {imageKey, presigned};
+//             })
+//         );
 
-        res.json(presignedData);
-    } catch(err) {
-        console.log(err);
-        res.status(400).json({message:err.message});
-    }
-});
+//         res.json(presignedData);
+//     } catch(err) {
+//         console.log(err);
+//         res.status(400).json({message:err.message});
+//     }
+// });
 
+// imageRouter.post("/", upload.array("image", 30), async (req, res) => {
+//     //console.log(req.file);
+//     // 유저 정보 , public 유무 확인
+//     try {
+//         if(!req.user) throw new Error("권한이 없습니다.");
+//         const {images, public} = req.body;
 
+//         const imageDocs = await Promise.all(
+//             images.map((image) => {
+//             new Image({ 
+//                 user: {
+//                     _id: req.user.id,
+//                     name: req.user.name,
+//                     username: req.user.username,
+//                 },
+//                 public,// string 타입!
+//                 key: image.imageKey, 
+//                 originalFileName: image.originalname, 
+//             }).save()
+//             })
+//         );
+//         res.json(imageDocs); // return 값
+//     } catch(err) {
+//         console.log(err);
+//         res.status(400).json({message:err.message});
+//     }
+// });
 // image 경로로 post 호출이 왔을 때 
 // 최대 30장의 이미지까지만 업로드
+
 imageRouter.post("/", upload.array("image", 30), async (req, res) => {
-    //console.log(req.file);
-    // 유저 정보 , public 유무 확인
     try {
         if(!req.user) throw new Error("권한이 없습니다.");
         const images = await Promise.all(
             req.files.map(async (file) => {
-            const image = await new Image({ 
-                user: {
-                    _id: req.user.id,
-                    name: req.user.name,
-                    username: req.user.username,
-                },
-                public: req.body.public, // string 타입!
-                key: file.key.replace("raw/",""), 
-                originalFileName: file.originalname, 
-            }).save();
-            return image;
+                const image = await new Image({ 
+                    user: {
+                        _id: req.user.id,
+                        name: req.user.name,
+                        username: req.user.username,
+                    },
+                    public: req.body.public,// string 타입!
+                    key: file.key.replace("raw/", ""), 
+                    originalFileName: file.originalname, 
+                }).save();
+                return image;
             })
         );
         res.json(images); // return 값
@@ -59,7 +84,9 @@ imageRouter.post("/", upload.array("image", 30), async (req, res) => {
         console.log(err);
         res.status(400).json({message:err.message});
     }
-});      //이미지 업로드
+});
+
+//이미지 업로드
 imageRouter.get("/", async(req,res) => {
     // public한 이미지들만 제공
     try {
