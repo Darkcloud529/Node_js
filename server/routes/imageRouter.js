@@ -7,30 +7,31 @@ const {promisify} = require("util");
 const mongoose = require("mongoose");
 const { runInNewContext } = require("vm");
 const {s3} = require("../aws");
+const {v4: uuid} = require("uuid"); // uuid 생성 모듈, v4 사용
+const mime = require("mime-types"); // mime-types 생성 : .jpeg와 같은 확장자 붙여주는 모듈
 
-const fileUnlink = promisify(fs.unlink);
+//const fileUnlink = promisify(fs.unlink);
 
+imageRouter.post("/presigned", async(req, res) => {
+    try {
+        if(!req.user) throw Error("권한이 없습니다.");
+        const {contentTypes} = req.body;
+        if(!Array.isArray(contentTypes)) throw new Error("invalid contentTypes");
+        const presignedData = await Promise.all(
+            contentTypes.map(async (contentTypes) => {
+                const imageKey = `${uuid()}.${mime.extension(contentTypes)}`;
+                const key = `raw/${imageKey}`;
+                const presigned = await getSignedUrl({key});
+                return {imageKey, presigned};
+            })
+        );
 
-// imageRouter.post("/presigned", async(req, res) => {
-//     try {
-//         if(!req.user) throw Error("권한이 없습니다.");
-//         const {contentTypes} = req.body;
-//         if(!Array.isArray(contentTypes)) throw new Error("invalid contentTypes");
-//         const presignedData = await Promise.all(
-//             contentTypes.map(async (contentTypes) => {
-//                 const imageKey = `${uuid()}.${mime.extension(contentTypes)}`;
-//                 const key = `raw/${imageKey}`;
-//                 const presigned = await getSignedUrl({key});
-//                 return {imageKey, presigned};
-//             })
-//         );
-
-//         res.json(presignedData);
-//     } catch(err) {
-//         console.log(err);
-//         res.status(400).json({message:err.message});
-//     }
-// });
+        res.json(presignedData);
+    } catch(err) {
+        console.log(err);
+        res.status(400).json({message:err.message});
+    }
+});
 
 // imageRouter.post("/", upload.array("image", 30), async (req, res) => {
 //     //console.log(req.file);
