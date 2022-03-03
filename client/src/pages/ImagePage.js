@@ -76,7 +76,7 @@ const ImagePage = () => {
     return (
     <div>
         <h3>Image Page - {imageId} </h3>
-        <img style={{width:"100%"}} alt={imageId} src={`http://localhost:5000/uploads/${image.key}`}/>
+        <img style={{width:"100%"}} alt={imageId} src={`https://image-upload-tutorial-smlee.s3.ap-northeast-2.amazonaws.com/raw/${image.key}`}/>
         <span> 좋아요 {image.likes.length} </span>
         {me && image.user._id === me.userId && (
             <button 
