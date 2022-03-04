@@ -36,63 +36,64 @@ const UploadForm = () => {
         setPreviews(imagePreviews);
     };
 
-    // const onSubmitV2 = async(e) => {
-    //     e.preventDefault();
-    //     try{
-    //         setIsLoading(true);
-    //         const presignedData = await axios.post("/images/presigned", {
-    //             contentType: [...files].map((file) => file.type)
-    //         });
+    //presignedUrl Submit
+    const onSubmitV2 = async(e) => {
+        e.preventDefault();
+        try{
+            setIsLoading(true);
+            const presignedData = await axios.post("/images/presigned", {
+                contentType: [...files].map((file) => file.type)
+            });
 
-    //         await Promise.all(
-    //             [...files].map((file, index) => {
-    //                 const {presigned} = presignedData.data[index];
-    //                 const formData = new FormData();
-    //                 for (const key in presigned.fields) {
-    //                     formData.append(key, presigned.fields[key]);
-    //                 }
-    //                 formData.append("Content-Type", file.type);
-    //                 formData.append("file",file);
-    //                 return axios.post(presigned.url, formData, {
-    //                     onUploadProgress: (e) => {
-    //                         setPercent((prevData) => {
-    //                             const newData = [...prevData];
-    //                             newData[index] = Math.round((100 * e.loaded) / e.total);
-    //                             return newData;
-    //                         });
-    //                     }
-    //                 });
-    //             })
-    //         );
+            await Promise.all(
+                [...files].map((file, index) => {
+                    const {presigned} = presignedData.data[index];
+                    const formData = new FormData();
+                    for (const key in presigned.fields) {
+                        formData.append(key, presigned.fields[key]);
+                    }
+                    formData.append("Content-Type", file.type);
+                    formData.append("file",file);
+                    return axios.post(presigned.url, formData, {
+                        onUploadProgress: (e) => {
+                            setPercent((prevData) => {
+                                const newData = [...prevData];
+                                newData[index] = Math.round((100 * e.loaded) / e.total);
+                                return newData;
+                            });
+                        }
+                    });
+                })
+            );
 
-    //         const res = await axios.post("/images", {
-    //             images: [...files].map((file, index) => ({
-    //                 imageKey: presignedData.data[index].imageKey,
-    //                 originalname: file.name,
-    //             })),
-    //             public: isPublic,
-    //         });
+            const res = await axios.post("/images", {
+                images: [...files].map((file, index) => ({
+                    imageKey: presignedData.data[index].imageKey,
+                    originalname: file.name,
+                })),
+                public: isPublic,
+            });
 
-    //         if(isPublic) setImages((prevData) => [...res.data, ...prevData]);
-    //         setMyImages((prevData) => [...res.data, ...prevData]);
+            if(isPublic) setImages((prevData) => [...res.data, ...prevData]);
+            setMyImages((prevData) => [...res.data, ...prevData]);
 
-    //         toast.success("이미지 업로드 성공!");
-    //         // 이미지 업로드 성공 후 초기화
-    //         setTimeout(() => {
-    //             setPercent([]);                  //퍼센트 초기화
-    //             setPreviews([]);     
-    //             setIsLoading(false);          //이미지 초기화
-    //             inputRef.current.value = null;
-    //         }, 3000);
-    //     } catch(err) {
-    //         toast.error(err.response.data.message);
-    //         setPercent([]);
-    //         setPreviews([]);
-    //         setIsLoading(false);
-    //         inputRef.current.value = null;
-    //         console.error(err);
-    //     }
-    // };
+            toast.success("이미지 업로드 성공!");
+            // 이미지 업로드 성공 후 초기화
+            setTimeout(() => {
+                setPercent([]);                  //퍼센트 초기화
+                setPreviews([]);     
+                setIsLoading(false);          //이미지 초기화
+                inputRef.current.value = null;
+            }, 3000);
+        } catch(err) {
+            toast.error(err.response.data.message);
+            setPercent([]);
+            setPreviews([]);
+            setIsLoading(false);
+            inputRef.current.value = null;
+            console.error(err);
+        }
+    };
 
  
     const onSubmit = async (e) => {
@@ -146,7 +147,7 @@ const UploadForm = () => {
     const fileName = previews.length === 0 ? "이미지 파일을 업로드 해주세요." : previews.reduce((previous, current)=>previous+`${current.fileName},`,"");
 
     return (
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmitV2}>
             <div style={{display: "flex", flexWrap: "wrap" }}>{previewImages}</div>
             <ProgressBar percent={percent}/>
             <div className="file-dropper">
