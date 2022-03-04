@@ -69,7 +69,7 @@ const UploadForm = () => {
             const res = await axios.post("/images", {
                 images: [...files].map((file, index) => ({
                     imageKey: presignedData.data[index].imageKey,
-                    originalname: file.name,
+                    originalname: file.originalname,
                 })),
                 public: isPublic,
             });
