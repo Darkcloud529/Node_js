@@ -14,6 +14,13 @@ exports.handler = async (event) => {
         const keyOnly = Key.split("/")[1];
         console.log(`Image Resizing: ${keyOnly}`);
         const image = await s3.getObject({Bucket: "image-upload-tutorial-smlee", Key});
+
+        await Promise.all(transformationOptions.map(({name,width})=>{
+            const newKey = `${name}/${keyOnly}` ;
+            const resizedImage = await sharp(image.Body).rotate().resize(width).toBuffer();
+            await s3.putObject({Bucket:"image-upload-tutorial-smlee", Body:resizedImage, Key:newKey}).promise();
+
+        }))
         return {
             statusCode: 200,
             body: event,
