@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from "axios";                  //
 import { toast } from "react-toastify";     //error massage 출력
 import "./UploadForm.css";
@@ -12,7 +12,7 @@ const UploadForm = () => {
     const [percent, setPercent] = useState([]);
     const [isPublic, setIsPublic] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-    const inputRef = useRef();
+    
 
     const imageSelectHandler = async (event) => {
         const imageFiles = event.target.files;
@@ -40,9 +40,9 @@ const UploadForm = () => {
     const onSubmitV2 = async(e) => {
         e.preventDefault();
         try{
-            
+            setIsLoading(true);
             const presignedData = await axios.post("/images/presigned", {
-                contentType: [...files].map((file) => file.type)
+                contentType: [...files].map((file) => file.type),
             });
 
             await Promise.all(
@@ -61,7 +61,7 @@ const UploadForm = () => {
                                 newData[index] = Math.round((100 * e.loaded) / e.total);
                                 return newData;
                             });
-                        }
+                        },
                     });
                 })
             );
@@ -82,13 +82,13 @@ const UploadForm = () => {
             setTimeout(() => {
                 setPercent([]);                  //퍼센트 초기화
                 setPreviews([]);              //이미지 초기화
-                inputRef.current.value = null;
+                setIsLoading(false);
             }, 3000);
         } catch(err) {
             toast.error(err.response.data.message);
             setPercent([]);
             setPreviews([]);
-            inputRef.current.value = null;
+            setIsLoading(false);
             console.error(err);
         }
     };
@@ -144,7 +144,13 @@ const UploadForm = () => {
     </div>
     ));
 
-    const fileName = previews.length === 0 ? "이미지 파일을 업로드 해주세요." : previews.reduce((previous, current)=>previous+`${current.fileName},`,"");
+    const fileName = 
+        previews.length === 0 
+            ? "이미지 파일을 업로드 해주세요." 
+            : previews.reduce(
+                (previous, current) => previous+`${current.fileName},`,
+                ""
+            );
 
     return (
         <form onSubmit={onSubmitV2}>
@@ -157,7 +163,6 @@ const UploadForm = () => {
             <div className="file-dropper">
                 {fileName}
                 <input 
-                ref={(ref)=>(inputRef.current = ref)}
                 id="image" 
                 type="file" 
                 multiple //여러 파일 업로드
@@ -167,7 +172,10 @@ const UploadForm = () => {
             </div>
             <input type="checkbox" id="public-check" value={!isPublic} onChange={() => setIsPublic(!isPublic)}/>
             <label htmlFor="public-check">비공개</label>
-        <button type="submit" style={{width:"100%", height:40, borderRadius:3, cursor:'pointer'}}> 제출 </button>
+        <button 
+            type="submit"
+            disabled={isLoading} 
+            style={{width:"100%", height:40, borderRadius:3, cursor:'pointer'}}> 제출 </button>
       </form>
     );
 };

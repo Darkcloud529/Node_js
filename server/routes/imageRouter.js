@@ -41,7 +41,7 @@ imageRouter.post("/", upload.array("image", 30), async (req, res) => {
         const {images, public} = req.body;
 
         const imageDocs = await Promise.all(
-            images.map((image) => {
+            images.map((image) => 
             new Image({ 
                 user: {
                     _id: req.user.id,
@@ -52,7 +52,7 @@ imageRouter.post("/", upload.array("image", 30), async (req, res) => {
                 key: image.imageKey, 
                 originalFileName: image.originalname, 
             }).save()
-            })
+            )
         );
         
         res.json(imageDocs); // return 값
