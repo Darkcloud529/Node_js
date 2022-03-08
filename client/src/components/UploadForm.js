@@ -18,7 +18,6 @@ const UploadForm = () => {
         const imageFiles = event.target.files;
         //console.log({imageFile});
         setFiles(imageFiles);
-
         const imagePreviews = await Promise.all(
             [...imageFiles].map(async (imageFile) => {
                 return new Promise((resolve, reject) => {
@@ -42,13 +41,15 @@ const UploadForm = () => {
         try{
             setIsLoading(true);
             const presignedData = await axios.post("/images/presigned", {
-                contentType: [...files].map((file) => file.type),
+                // 배열로 전환
+                contentTypes: [...files].map((file) => file.type),
             });
 
             await Promise.all(
                 [...files].map((file, index) => {
                     const {presigned} = presignedData.data[index];
                     const formData = new FormData();
+                    // 각 key 명과 key 명에 따른 값을 자동적으로 입력
                     for (const key in presigned.fields) {
                         formData.append(key, presigned.fields[key]);
                     }
@@ -85,11 +86,11 @@ const UploadForm = () => {
                 setIsLoading(false);
             }, 3000);
         } catch(err) {
+            console.error(err);
             toast.error(err.response.data.message);
             setPercent([]);
             setPreviews([]);
             setIsLoading(false);
-            console.error(err);
         }
     };
 

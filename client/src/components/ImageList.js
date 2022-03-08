@@ -27,10 +27,16 @@ const ImageList = () => {
 
     //console.log({images});
     const imgList = images.map((image, index) => (
-        <Link key={image.key} to={`/images/${image._id}`} ref={index+5 === images.length ? elementRef : undefined}>
-        <img 
-        alt=""
-        src={`https://image-upload-tutorial-smlee.s3.ap-northeast-2.amazonaws.com/raw/${image.key}`}/>
+        <Link 
+            key={image.key} 
+            to={`/images/${image._id}`} 
+            ref={index+5 === images.length ? elementRef : undefined}
+        >
+
+            <img 
+                alt=""
+                src={`https://image-upload-tutorial-smlee.s3.ap-northeast-2.amazonaws.com/raw/${image.key}`}
+            />
         </Link>
     ));
   

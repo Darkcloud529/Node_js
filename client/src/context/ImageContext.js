@@ -57,6 +57,7 @@ export const ImageProvider = (prop) => {
             imageLoading, 
             imageError 
             }}>
+                
             {prop.children}
         </ImageContext.Provider>
     );

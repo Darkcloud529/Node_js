@@ -6,7 +6,7 @@ const fs = require("fs");
 const {promisify} = require("util");
 const mongoose = require("mongoose");
 const { runInNewContext } = require("vm");
-const {s3} = require("../aws");
+const {s3, getSignedUrl} = require("../aws");
 const {v4: uuid} = require("uuid"); // uuid 생성 모듈, v4 사용
 const mime = require("mime-types"); // mime-types 생성 : .jpeg와 같은 확장자 붙여주는 모듈
 
@@ -14,8 +14,11 @@ const mime = require("mime-types"); // mime-types 생성 : .jpeg와 같은 확�
 
 imageRouter.post("/presigned", async(req, res) => {
     try {
+        // 로그인 유무 확인
         if(!req.user) throw Error("권한이 없습니다.");
+        // 파일 자체가 아닌 타입만 전달 받기
         const {contentTypes} = req.body;
+        // 배열인지 확인
         if(!Array.isArray(contentTypes)) throw new Error("invalid contentTypes");
         const presignedData = await Promise.all(
             contentTypes.map(async (contentTypes) => {
@@ -39,7 +42,6 @@ imageRouter.post("/", upload.array("image", 30), async (req, res) => {
     try {
         if(!req.user) throw new Error("권한이 없습니다.");
         const {images, public} = req.body;
-
         const imageDocs = await Promise.all(
             images.map((image) => 
             new Image({ 
@@ -139,6 +141,8 @@ imageRouter.delete("/:imageId", async(req,res) => {
         if(!image) 
             return res.json({message: "요청하신 사진은 이미 삭제되었습니다."});
         // await fileUnlink(`./uploads/${image.key}`);
+        
+        // s3에 있는 이미지 삭제 
         s3.deleteObject(
             {Bucket:"image-upload-tutorial-smlee", Key: `raw/${image.key}`}, 
             (error) => {

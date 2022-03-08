@@ -2,7 +2,7 @@ const multer = require('multer');   // multer, 이미지 업로드용 모듈 생
 const {v4: uuid} = require("uuid"); // uuid 생성 모듈, v4 사용
 const mime = require("mime-types"); // mime-types 생성 : .jpeg와 같은 확장자 붙여주는 모듈
 const multerS3 = require("multer-s3");
-const {s3} = require("../aws")
+const { s3 } = require("../aws");
 
 
 // 파일 저장 과정 제어
@@ -19,7 +19,7 @@ const storage = multerS3({
     s3,
     bucket: "image-upload-tutorial-smlee",
     key: (req, file, cb) => 
-        cb(null, `raw/${uuid()}.${mime.extension(file.mimetype)}`)
+        cb(null, `raw/${uuid()}.${mime.extension(file.mimetype)}`),
 });
 
 // multer 이용한 upload 함수
