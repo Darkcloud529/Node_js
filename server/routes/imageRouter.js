@@ -41,6 +41,7 @@ imageRouter.post("/", upload.array("image", 30), async (req, res) => {
     // 유저 정보 , public 유무 확인
     try {
         if(!req.user) throw new Error("권한이 없습니다.");
+        // json 형태
         const {images, public} = req.body;
         const imageDocs = await Promise.all(
             images.map((image) => 
@@ -50,7 +51,7 @@ imageRouter.post("/", upload.array("image", 30), async (req, res) => {
                     name: req.user.name,
                     username: req.user.username,
                 },
-                public,// string 타입!
+                public,
                 key: image.imageKey, 
                 originalFileName: image.originalname, 
             }).save()
@@ -141,7 +142,7 @@ imageRouter.delete("/:imageId", async(req,res) => {
         if(!image) 
             return res.json({message: "요청하신 사진은 이미 삭제되었습니다."});
         // await fileUnlink(`./uploads/${image.key}`);
-        
+
         // s3에 있는 이미지 삭제 
         s3.deleteObject(
             {Bucket:"image-upload-tutorial-smlee", Key: `raw/${image.key}`}, 
