@@ -3,6 +3,7 @@ import {Link} from "react-router-dom";   //useEffect 사이드 이팩트가 발�
 import { AuthContext } from "../context/AuthContext";
 import {ImageContext} from "../context/ImageContext";
 import "./ImageList.css";
+import Image from "./image";
 
 const ImageList = () => {
     const {images,  isPublic, setIsPublic, imageLoading, imageError, setImageUrl } = useContext(ImageContext);
@@ -32,11 +33,11 @@ const ImageList = () => {
             to={`/images/${image._id}`} 
             ref={index+5 === images.length ? elementRef : undefined}
         >
-
-            <img 
+            <Image imageUrl={`https://image-upload-tutorial-smlee.s3.ap-northeast-2.amazonaws.com/w140/${image.key}`} />
+            {/* <img 
                 alt=""
                 src={`https://image-upload-tutorial-smlee.s3.ap-northeast-2.amazonaws.com/w140/${image.key}`}
-            />
+            /> */}
         </Link>
     ));
   
