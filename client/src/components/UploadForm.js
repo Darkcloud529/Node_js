@@ -175,7 +175,7 @@ const UploadForm = () => {
             <label htmlFor="public-check">비공개</label>
         <button 
             type="submit"
-            disabled={isLoading} 
+            disabled={isLoading} // 로딩중인 경우 버튼 비활성화
             style={{width:"100%", height:40, borderRadius:3, cursor:'pointer'}}> 제출 </button>
       </form>
     );
