@@ -19,7 +19,7 @@ exports.handler = async (event) => {
         await Promise.all(transformationOptions.map(async ({name,width})=>{
             try {
                 const newKey = `${name}/${keyOnly}`;
-                const resizedImage = await sharp(image.Body).rotate().resize(width).toBuffer();
+                const resizedImage = await sharp(image.Body).rotate().resize({width, height:width, fit:"outside"}).toBuffer();
                 await s3.putObject({Bucket:"image-upload-tutorial-smlee", Body:resizedImage, Key:newKey}).promise();
             } catch(err) {
                 throw err
