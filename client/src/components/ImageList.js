@@ -33,7 +33,7 @@ const ImageList = () => {
             to={`/images/${image._id}`} 
             ref={index+5 === images.length ? elementRef : undefined}
         >
-            <Image imageUrl={`https://image-upload-tutorial-smlee.s3.ap-northeast-2.amazonaws.com/w140/${image.key}`} />
+            <Image imageUrl={`https://d5swhvagmr7nv.cloudfront.net/w140/${image.key}`} />
             {/* <img 
                 alt=""
                 src={`https://image-upload-tutorial-smlee.s3.ap-northeast-2.amazonaws.com/w140/${image.key}`}
